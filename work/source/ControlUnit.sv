@@ -1,0 +1,295 @@
+// Integrated Electronic Systems Lab
+// TU Darmstadt
+// Author:	Marcel Mann
+
+`timescale 1 ns / 1 ps
+
+module controlunit(
+
+// INPUTS
+input logic [15:0]		in,
+input logic [3:0] 		alu_status_i,
+input logic				cu_input_en_i,
+
+
+// OUTPUTS
+output logic [3:0]		src1Reg, 
+output logic [3:0]		destReg, 
+output logic [3:0]		src2Reg,
+output logic	 		immediate,
+output logic			PCtoALU,
+output logic 			setConditionCodes,
+output logic 			branch,
+output logic 			mem2Reg_o,
+output logic			shiftImm,
+output logic [7:0]		immOut,
+output logic [1:0]		opOut,
+output logic			mem_load,
+output logic			mem_write,
+output logic 			sp_write_en_o,
+output logic			stall_self_instruct_o,
+output logic [15:0]		self_instruct_o,
+output logic 			self_instruct_en_o,
+output logic			sp_dec_o,
+output logic			end_program_o,
+output logic 			rf_write_en_o
+
+);
+
+// PARAMETERS
+parameter SP = 4'b1101;
+parameter LR = 4'b1110;
+parameter ADD = 0, SUB = 1, CMP  = 2, LSL = 3 ;
+
+int i;
+
+assign n = alu_status_i[3];
+assign z = alu_status_i[2];
+assign v = alu_status_i[0];
+
+task srcDestReg;
+begin
+	destReg = in[2:0];
+	src1Reg = in[5:3];
+	rf_write_en_o = 1;
+end
+endtask
+
+always_ff @ (*) 
+	begin
+	
+	//initialize
+	rf_write_en_o = 0;
+	sp_write_en_o = 0;
+	immediate = 0;
+	shiftImm = 0;
+	mem_load = 0;
+	mem_write = 0;
+	setConditionCodes = 1;
+	branch = 0;
+	immOut = 0;
+	src1Reg = 0;
+	src2Reg = 0;
+	destReg = 0;
+	PCtoALU = 0;
+	opOut = 0;
+	sp_dec_o = 0;
+	self_instruct_en_o = 0;
+	self_instruct_o = 0;
+	stall_self_instruct_o = 0;
+	mem2Reg_o = 0;
+	end_program_o = 0;
+
+	if (cu_input_en_i)
+	begin
+
+	if(in == 0) end_program_o = 1;
+
+
+		case (in[15:12])
+			// Type 1: Move shifted register
+			4'b000x:
+				begin
+				opOut = LSL;
+				immOut = in[10:6];
+				srcDestReg;
+				end
+			
+			// Type 2; add/subtract
+			4'b0001:
+				begin
+				immediate = in[10];
+				opOut = ADD;
+				srcDestReg;
+				if (immediate) 
+					immOut = in[8:5];
+				else
+					src2Reg = in[8:5];
+				end
+			
+			
+			// Type 3; move/compare/add/subtract immediate
+			4'b001x:
+				begin
+				immediate = 1;
+				immOut = in[7:0];
+				case (in[12:11])
+					// move
+					2'b00: 
+						begin
+						rf_write_en_o = 1;
+						destReg = in[10:8];
+						//opOut = MOV;
+						end
+
+					//compare
+					2'b01:	
+						begin
+						src1Reg = in[10:8];
+						opOut = CMP;
+						end
+
+					2'b1x:
+						begin
+						src1Reg = in[10:8];
+						destReg = in[10:8];
+						rf_write_en_o = 1;
+						opOut = ADD;
+						end
+				endcase
+				end					
+
+			// Type 5/6
+			4'b0100:
+				begin
+				if (in[11] == 1'b0) 
+					begin
+					//Type 5: Hi Register Operations/Branch Exchange
+					//opOut = MOV;
+					immediate = 0;
+					src1Reg = {in[7],in[5:3]};
+					destReg = {in[6],in[2:0]};
+					rf_write_en_o = 1;
+					end
+				else
+					begin
+					// Type 6: PC-relative load
+					destReg = in[10:8];
+					rf_write_en_o = 1;
+					PCtoALU = 1;
+					immediate = 1;
+					immOut = in[7:0];
+					opOut = ADD;
+					shiftImm = 1;
+					
+					mem_load = 1;
+					mem2Reg_o = 1;
+					end
+				end
+
+			// Type 7: Load/Store with Register offset
+			4'b0101:
+				begin
+				mem_load = in[11];
+				mem_write = ~in[11];
+				src1Reg = in[8:6];
+				src2Reg = in[5:3];
+				destReg = in[2:0];
+				rf_write_en_o = 1;
+				opOut = ADD;
+				end			
+
+			// Type 9: <load/Store with immediate offset
+			4'b011x:
+				begin			
+				mem_load = in[11];
+				mem_write = ~in[11];
+				immediate = 1;
+				shiftImm = 1;
+				immOut = in[10:6];	
+				src1Reg = in[5:3];
+				rf_write_en_o = 1;
+				destReg = in[2:0];
+				opOut = ADD;
+				mem2Reg_o = 1;
+				end
+			// Type 11 SP-relative Load/Store
+			// input 9701
+			4'b1001: 
+				begin
+				mem_write = 1;
+				opOut = SUB;
+				immOut = 8'd4;
+				src1Reg = SP;
+				immediate = 1;
+				src2Reg = 3'b111;
+				sp_write_en_o = 1;
+				end
+
+			// Type 12 load address
+			4'b1010:
+				begin
+				immOut = in[7:0];		//Word8
+				immediate = 1;			
+				shiftImm = 1;
+				opOut = ADD;
+				destReg = in[10:8];
+				rf_write_en_o = 1;
+				mem2Reg_o = 0;
+				if (in[11])
+					src1Reg = SP;	//SP
+				else
+					PCtoALU = 1;
+				end
+			
+			// Type 13/14
+			4'b1011:
+				begin
+				if (in[11:8] == 0)
+					// Type 13: Add offset to SP
+					begin
+					src1Reg = SP;
+					immediate = 1;
+					setConditionCodes = 0;
+					opOut = in[7] ? SUB : ADD;
+					immOut = in[6:0];
+					shiftImm = 1;
+					end
+				else
+					// Type 14: Push/Pop Registers
+					begin
+					mem_load = in[11];
+					mem_write = ~in[11];
+					immediate = 1;
+					src1Reg = SP;
+					opOut = SUB;
+					sp_write_en_o = 1;
+				
+					// PUSH
+					if (mem_write)
+						// ALU: SP + 4 => mem_addr
+						// src2Reg => mem_data_i
+						begin
+						immOut = 3'b100;
+						src2Reg = 4'b1110;	
+						sp_dec_o = 0;
+					
+						// self instruct store r7 @SP+4
+						self_instruct_en_o = 1;
+						// 16'h9701
+						self_instruct_o = 16'b1001011100000001;
+						stall_self_instruct_o = 1;
+						end
+					
+					// POP
+					if (mem_load)
+						begin
+						mem2Reg_o = 1;
+						sp_dec_o = 1;
+						immOut = 0;
+						rf_write_en_o = 1;
+						destReg = 0'b111;
+						// self instruct 16'haf00
+						self_instruct_en_o = 1;
+						self_instruct_o = 16'b1010111100000000;
+						stall_self_instruct_o = 1;
+						end
+					end
+				end					
+			// Type 16
+			4'b1101:
+			
+				branch = ( z || (n && ~v) || (~n && v));
+					
+			// Type 18
+			4'b1110:
+				immOut = in[10:0];
+			
+			// Type 19: NOP
+			4'b1111:
+			begin
+			end
+		endcase
+		end		
+	end
+endmodule
