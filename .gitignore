@@ -45,3 +45,11 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+*.mti
+hdllab.cr.mti
+*.mpf
+vsim.wlf
+*.qdb
+work/_lib1_26.qpg
+*.qtl
+work/_lib1_28.qpg

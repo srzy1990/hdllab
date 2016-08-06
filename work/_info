@@ -10,7 +10,7 @@ cModel Technology
 dE:/
 valu
 Z0 DXx6 sv_std 3 std 0 22 WmjPaeP=7F5?QFXzJ>D[Q2
-Z1 !s110 1470486093
+Z1 !s110 1470488629
 !i10b 1
 !s100 Z8XfoAd2U23R=5L^XdC;D3
 I_8`6f77K:DQBh2;Xdc?`81
@@ -26,7 +26,7 @@ Z4 OP;L;10.4a;61
 r1
 !s85 0
 31
-Z5 !s108 1470486093.000000
+Z5 !s108 1470488629.000000
 !s107 E:/hdllab/work/source/alu.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/alu.sv|
 !s101 -O0
@@ -34,15 +34,15 @@ Z5 !s108 1470486093.000000
 Z6 o-work work -sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
 vcontrolunit
 R0
-R1
+Z7 !s110 1470488630
 !i10b 1
-!s100 i7g42>bl6nR6laMHj9RlO3
-IS7XGC3JPUP^ORS0ch<UnR0
+!s100 PTBO3:M8;aWO2UL]7aGJl2
+IZK_]mL]`J^6fbYhIcMBK:0
 R2
 !s105 ControlUnit_sv_unit
 S1
 R3
-w1470473082
+w1470487203
 8E:/hdllab/work/source/ControlUnit.sv
 FE:/hdllab/work/source/ControlUnit.sv
 L0 7
@@ -58,7 +58,7 @@ R5
 R6
 vcpu
 R0
-R1
+R7
 !i10b 1
 !s100 ;EGSh99GiD3Mz;d:]lM`b1
 I^mU1RaJIend5Qd=d_ARSf2
@@ -74,7 +74,7 @@ R4
 r1
 !s85 0
 31
-R5
+Z8 !s108 1470488630.000000
 !s107 E:/hdllab/work/source/cpu.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/cpu.sv|
 !s101 -O0
@@ -82,15 +82,15 @@ R5
 R6
 vdecode_rf
 R0
-Z7 !s110 1470486094
+!s110 1470488877
 !i10b 1
-!s100 gE71dHLhi@eQ>PbL[ALkY0
-IQ;7zi`CFZKH1IU6E[WM@L2
+!s100 ;m:BZkbZN<K>nO`2>6Yma3
+I8Ed29iYM=:J02A6G38n6H0
 R2
 !s105 decode_rf__sv_unit
 S1
 R3
-w1470486084
+w1470488863
 8E:/hdllab/work/source/stages/decode_rf_.sv
 FE:/hdllab/work/source/stages/decode_rf_.sv
 L0 2
@@ -98,7 +98,7 @@ R4
 r1
 !s85 0
 31
-Z8 !s108 1470486094.000000
+!s108 1470488877.000000
 !s107 E:/hdllab/work/source/stages/decode_rf_.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/stages/decode_rf_.sv|
 !s101 -O0
@@ -106,7 +106,7 @@ Z8 !s108 1470486094.000000
 R6
 vexecute_mem
 R0
-R7
+Z9 !s110 1470488631
 !i10b 1
 !s100 Z]OPI@]KKRgMHaI94FfIh0
 IMC]H77V`zRFF_7U7FdOdA3
@@ -122,7 +122,7 @@ R4
 r1
 !s85 0
 31
-R8
+Z10 !s108 1470488631.000000
 !s107 E:/hdllab/work/source/stages/execute_mem.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/stages/execute_mem.sv|
 !s101 -O0
@@ -130,7 +130,7 @@ R8
 R6
 vhdu
 R0
-R1
+R7
 !i10b 1
 !s100 n>41^ddASS:1nim^9iU:n3
 IN[P0LVYn^O9>25j9CT9f72
@@ -146,7 +146,7 @@ R4
 r1
 !s85 0
 31
-R5
+R8
 !s107 E:/hdllab/work/source/hdu.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/hdu.sv|
 !s101 -O0
@@ -154,7 +154,7 @@ R5
 R6
 vmem_arbiter
 R0
-R1
+R7
 !i10b 1
 !s100 ;DH7=HebAO@KNzAa>_25f3
 IDAR?Hg41fSl3WOQ0L?A_`3
@@ -170,7 +170,7 @@ R4
 r1
 !s85 0
 31
-R5
+R8
 !s107 E:/hdllab/work/source/mem_arbiter.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/mem_arbiter.sv|
 !s101 -O0
@@ -204,13 +204,13 @@ vregister_file
 R0
 R7
 !i10b 1
-!s100 aXc?[E[nRi>znSkWGYEmB2
-IXcaVdo:;Yg;0zkz:I4^5T1
+!s100 B=>Kl^Nb^n`XBG<J2V:?M1
+IYD702C4YbbO03cE]OJ[U:0
 R2
 !s105 register_file_sv_unit
 S1
 R3
-w1470472558
+w1470488591
 8E:/hdllab/work/source/register_file.sv
 FE:/hdllab/work/source/register_file.sv
 L0 4
@@ -242,7 +242,7 @@ R4
 r1
 !s85 0
 31
-!s108 1470486092.000000
+R5
 !s107 E:/hdllab/work/source/sign_extender.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/sign_extender.sv|
 !s101 -O0
@@ -250,7 +250,7 @@ r1
 R6
 vtestbench
 R0
-R7
+R9
 !i10b 1
 !s100 be1^Vh]Nj6NTEdTenDoZZ0
 I^V_6cXa4WK96:0biHZO?a2
@@ -266,7 +266,7 @@ R4
 r1
 !s85 0
 31
-R8
+R10
 !s107 E:/hdllab/work/testbench/testbench.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/testbench/testbench.sv|
 !s101 -O0
@@ -274,7 +274,7 @@ R8
 R6
 vwrite_back_fetch
 R0
-R7
+R9
 !i10b 1
 !s100 9Qz7RIlS^WU2WJcM@VVYJ2
 IGRHKSl@11[`iNXWdz6d3C1
@@ -290,7 +290,7 @@ R4
 r1
 !s85 0
 31
-R8
+R10
 !s107 E:/hdllab/work/source/stages/writeBack_fetch.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/stages/writeBack_fetch.sv|
 !s101 -O0

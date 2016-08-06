@@ -67,7 +67,8 @@ module decode_rf (
 
 	register_file rf(
 		.clk (clk_i),
-		.rst (rst_i),		
+		.rst (rst_i),	
+		.stall_i (~instr_en_i),			// stall values from RegFile if we don't have a new instruction
 		.rd0_select (rf_rd0_sel),
 		.rd1_select (rf_rd1_sel),
 		.write_en (o_2rf_wr_en),
@@ -94,14 +95,6 @@ module decode_rf (
 	logic 			mem2Reg;
 	logic 			sp_wr_en_buffer;
 
-	always_comb begin
-		if (self_instruct_en_buffer_2)
-			instruct_cu = self_instruct_buffer_2;
-		else if (instr_en_i)
-			instruct_cu = instr_i;
-		else instruct_cu = 16'b1111;
-	end
-
 	controlunit cu (
 		.alu_status_i(alu_status_i),
 		.in (instruct_cu),
@@ -118,7 +111,6 @@ module decode_rf (
 		.mem_write (cu_mem_write_en),
 		.setConditionCodes(cu_set_ALU_cond),
 		.branch (cu_branch),
-		.stall_self_instruct_o (cu_stall_o),
 		.self_instruct_o (self_instruct),
 		.self_instruct_en_o(self_instruct_en),
 		.sp_dec_o(exec_sp_dec_o),
@@ -129,6 +121,17 @@ module decode_rf (
 		
 	);
 	
+	always_comb begin
+		if (self_instruct_en_buffer_2)
+			instruct_cu = self_instruct_buffer_2;
+			
+		else if (instr_en_i) begin
+			instruct_cu = instr_i;
+		end
+		
+		else instruct_cu = 16'b1111;
+	end
+	
 	assign cu_stall_o = cu_mem_load_en || cu_mem_write_en;
 	assign cu_stall_self_instruct_o = self_instruct_en; //self_instruct_en_buffer_2;
 	assign reg_a_o = reg_a; 
@@ -138,34 +141,44 @@ module decode_rf (
 		if(rst_i) begin
 			self_instruct_en_buffer_2 <= 0;
 			self_instruct_en_buffer_1 <= 0;
-		end else begin
+		end 
+		else begin		
+			if(instr_en_i) begin
+				self_instruct_en_buffer_1 <= self_instruct_en;
+				self_instruct_buffer_1 <= self_instruct;
+				self_instruct_en_buffer_2 <= self_instruct_en_buffer_1;
+				self_instruct_buffer_2 <= self_instruct_buffer_1;				
 
-			self_instruct_en_buffer_1 <= self_instruct_en;
-			self_instruct_buffer_1 <= self_instruct;
-			self_instruct_en_buffer_2 <= self_instruct_en_buffer_1;
-			self_instruct_buffer_2 <= self_instruct_buffer_1;				
+				immidiate_value_o <= {24'd0, immOut};
+				programm_counter_o <= programm_counter_i;
+				next_programm_counter_o <= next_programm_counter_i;
 
-			immidiate_value_o <= {24'd0, immOut};
-			programm_counter_o <= programm_counter_i;
-			next_programm_counter_o <= next_programm_counter_i;
-
-			ALU_op_Out_o <= ALUopOut;
-			shift_immidiate_o <= shift_imm;
-			PC_to_ALU_o <= PCtoALU;
-	
+				
+		
+				
+				cu_mem_load_en_o <= cu_mem_load_en;
+				cu_mem_write_en_o <= cu_mem_write_en;
+				cu_set_ALU_cond_o <= cu_set_ALU_cond;
+				cu_branch_o <= cu_branch;
+		
+				x_imm_to_alu_o <= use_immidiate;
+				mem2Reg_o <= mem2Reg;
+				
+				rf_wr_select_o <= rf_wr_sel;
+				rf_wr_en_o <= rf_wr_en;
+				rf_sp_wr_en_o <= sp_wr_en_buffer;
+				sp_wr_en_buffer <= sp_wr_en;
+				ALU_op_Out_o <= ALUopOut;
+				shift_immidiate_o <= shift_imm;
+				PC_to_ALU_o <= PCtoALU;
 			
-			cu_mem_load_en_o <= cu_mem_load_en;
-			cu_mem_write_en_o <= cu_mem_write_en;
-			cu_set_ALU_cond_o <= cu_set_ALU_cond;
-			cu_branch_o <= cu_branch;
-	
-			x_imm_to_alu_o <= use_immidiate;
-			mem2Reg_o <= mem2Reg;
-			
-			rf_wr_select_o <= rf_wr_sel;
-			rf_wr_en_o <= rf_wr_en;
-			rf_sp_wr_en_o <= sp_wr_en_buffer;
-			sp_wr_en_buffer <= sp_wr_en;			
+			end
+			else begin
+				self_instruct_en_buffer_1 <= 0;
+				self_instruct_buffer_1 <= 0;
+
+				
+			end
 		end
 	end
 	

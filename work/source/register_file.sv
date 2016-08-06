@@ -4,6 +4,7 @@
 module register_file(
 	rst,
 	clk,
+	stall_i,
 	sp_write_en,
 	write_en,
 	rd0_select,
@@ -17,12 +18,13 @@ module register_file(
 
 // PORTS
    input logic			rst;
-   input logic	                clk;
+   input logic	        clk;
+   input logic			stall_i;
    input logic 			sp_write_en;
    input logic 			write_en;
    input logic [3:0] 		rd0_select;
    input logic [3:0] 		rd1_select;
-   input logic [3:0]            wr_select;
+   input logic [3:0]        wr_select;
    input logic [31:0]		sp_in;
    input logic [31:0]	 	data_in;
    output logic [31:0]	 	data_out0;
@@ -71,23 +73,25 @@ always_ff@(posedge clk) begin
 		data_out1 <= 32'b0;
 	end
 	else begin
-		if (rd0_select < 32'h8) begin
-			data_out0 <= register[rd0_select];
-		end
-		else if (rd0_select == 32'hd) begin
-			data_out0 <= sp;
-		end
-		else if (rd0_select == 32'he) begin
-			data_out0 <= lr;
-		end
-		if (rd1_select < 32'h8) begin
-			data_out1 <= register[rd1_select];
-		end
-		else if (rd1_select == 32'hd) begin
-			data_out1 <= sp;
-		end
-		else if (rd1_select == 32'he) begin
-			data_out1 <= lr;
+		if (~stall_i) begin
+			if (rd0_select < 32'h8) begin
+				data_out0 <= register[rd0_select];
+			end
+			else if (rd0_select == 32'hd) begin
+				data_out0 <= sp;
+			end
+			else if (rd0_select == 32'he) begin
+				data_out0 <= lr;
+			end
+			if (rd1_select < 32'h8) begin
+				data_out1 <= register[rd1_select];
+			end
+			else if (rd1_select == 32'hd) begin
+				data_out1 <= sp;
+			end
+			else if (rd1_select == 32'he) begin
+				data_out1 <= lr;
+			end
 		end
 	end
 end

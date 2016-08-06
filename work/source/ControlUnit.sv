@@ -27,7 +27,6 @@ output logic [1:0]		opOut,
 output logic			mem_load,
 output logic			mem_write,
 output logic 			sp_write_en_o,
-output logic			stall_self_instruct_o,
 output logic [15:0]		self_instruct_o,
 output logic 			self_instruct_en_o,
 output logic			sp_dec_o,
@@ -76,7 +75,6 @@ always_ff @ (*)
 	sp_dec_o = 0;
 	self_instruct_en_o = 0;
 	self_instruct_o = 0;
-	stall_self_instruct_o = 0;
 	mem2Reg_o = 0;
 	end_program_o = 0;
 
@@ -258,7 +256,6 @@ always_ff @ (*)
 						self_instruct_en_o = 1;
 						// 16'h9701
 						self_instruct_o = 16'b1001011100000001;
-						stall_self_instruct_o = 1;
 						end
 					
 					// POP
@@ -272,7 +269,6 @@ always_ff @ (*)
 						// self instruct 16'haf00
 						self_instruct_en_o = 1;
 						self_instruct_o = 16'b1010111100000000;
-						stall_self_instruct_o = 1;
 						end
 					end
 				end					
@@ -289,6 +285,7 @@ always_ff @ (*)
 			4'b1111:
 			begin
 			end
+				
 		endcase
 		end		
 	end
