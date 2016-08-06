@@ -85,14 +85,13 @@ module execute_mem (
 				if(mem_re_i|mem_we_i)begin
 					stall_pc_o = 1;
 					next_state = ST_RW_HIGH;
+					stall_d_o = 1;						// stall decode phase as we do not want new adresses for the second memory access
 				end
-
+				
 				if(mem_we_i)
 					data_mem_addr_o = alu_out + 32'd2;
 			end
 			ST_RW_HIGH: begin
-				stall_pc_o = 1;
-
 				next_state = ST_OP_CODE_HANDLING;
 	
 				data_mem_o = reg_b_i[31:16]; 
@@ -103,13 +102,8 @@ module execute_mem (
 				if(sp_inc_i)
 						sp_o <= alu_out + 32'd4;
 					else sp_o <= alu_out;	
-
-				stall_d_o = 1;
-				
 			end
 			ST_STALL_F : begin
-				stall_pc_o = 0;
-				stall_d_o = 1;
 				next_state = ST_STALL_D;	
 				mem_we_o = 0;	
 
@@ -120,13 +114,8 @@ module execute_mem (
 			ST_STALL_D : begin
 				next_state = ST_OP_CODE_HANDLING;	
 				mem_we_o = 0;	
-
-				
-				if (mem_re_i)
-					stall_d_o = 1;
 			end
 		endcase
-		
 	end 
 	
 

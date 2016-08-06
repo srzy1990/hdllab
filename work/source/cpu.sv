@@ -110,10 +110,12 @@ module cpu #(
 	logic 			cu2hdu_stall;		
 	//logic 			hdu2cu_stall;
 	logic			cu2hdu_stall_si;
+	logic			hdu2drf_stall_decode;
 
 	decode_rf d_rf (
 		.clk_i (clk_i),
 		.rst_i (rst_i),
+		.stall_i (hdu2drf_stall_decode),
 		.instr_i (a2stages_data),
 		.instr_en_i (a2d_instr_en),
 		.programm_counter_i (wbf_act_pc),
@@ -202,7 +204,8 @@ module cpu #(
 		.x_stall_d_i (x2hdu_stall_d_rf),
 		.x_release_f_i (x2hdu_release),
 
-		.stall_fetch_o(hdu2wbf_stall_fetch)
+		.stall_fetch_o(hdu2wbf_stall_fetch),
+		.stall_decode_o(hdu2drf_stall_decode)
 	);
 	
 endmodule

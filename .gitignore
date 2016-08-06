@@ -53,3 +53,6 @@ vsim.wlf
 work/_lib1_26.qpg
 *.qtl
 work/_lib1_28.qpg
+*.mti
+hdllab.cr.mti
+*.mpf
