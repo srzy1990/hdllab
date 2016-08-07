@@ -10,7 +10,7 @@ cModel Technology
 dE:/
 valu
 Z0 DXx6 sv_std 3 std 0 22 WmjPaeP=7F5?QFXzJ>D[Q2
-Z1 !s110 1470488629
+Z1 !s110 1470527493
 !i10b 1
 !s100 Z8XfoAd2U23R=5L^XdC;D3
 I_8`6f77K:DQBh2;Xdc?`81
@@ -26,7 +26,7 @@ Z4 OP;L;10.4a;61
 r1
 !s85 0
 31
-Z5 !s108 1470488629.000000
+Z5 !s108 1470527493.000000
 !s107 E:/hdllab/work/source/alu.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/alu.sv|
 !s101 -O0
@@ -34,15 +34,15 @@ Z5 !s108 1470488629.000000
 Z6 o-work work -sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact -O0
 vcontrolunit
 R0
-Z7 !s110 1470488630
+!s110 1470528008
 !i10b 1
-!s100 PTBO3:M8;aWO2UL]7aGJl2
-IZK_]mL]`J^6fbYhIcMBK:0
+!s100 adR3nQ3>4[icalCJ0zboV3
+I88ONhYAM_KflRc]8jGDKd2
 R2
 !s105 ControlUnit_sv_unit
 S1
 R3
-w1470487203
+w1470527962
 8E:/hdllab/work/source/ControlUnit.sv
 FE:/hdllab/work/source/ControlUnit.sv
 L0 7
@@ -50,23 +50,47 @@ R4
 r1
 !s85 0
 31
-R5
+!s108 1470528008.000000
 !s107 E:/hdllab/work/source/ControlUnit.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/ControlUnit.sv|
 !s101 -O0
 !i113 1
 R6
+vcounter
+R0
+Z7 !s110 1470527495
+!i10b 1
+!s100 P`0?3iU7iidd<@`PG^iQ;0
+IbUCVMPKRB[fAOkZEX;OlG1
+R2
+!s105 counter_sv_unit
+S1
+R3
+w1470521119
+8E:/hdllab/work/source/counter.sv
+FE:/hdllab/work/source/counter.sv
+L0 1
+R4
+r1
+!s85 0
+31
+Z8 !s108 1470527495.000000
+!s107 E:/hdllab/work/source/counter.sv|
+!s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/counter.sv|
+!s101 -O0
+!i113 1
+R6
 vcpu
 R0
-R7
+Z9 !s110 1470527494
 !i10b 1
-!s100 ;EGSh99GiD3Mz;d:]lM`b1
-I^mU1RaJIend5Qd=d_ARSf2
+!s100 76^9oO;]1O>9VDFWSLR2]0
+I;SU9mJNK:7Ea_lZg9_=S<1
 R2
 !s105 cpu_sv_unit
 S1
 R3
-w1470485825
+w1470520450
 8E:/hdllab/work/source/cpu.sv
 FE:/hdllab/work/source/cpu.sv
 L0 2
@@ -74,7 +98,7 @@ R4
 r1
 !s85 0
 31
-Z8 !s108 1470488630.000000
+Z10 !s108 1470527494.000000
 !s107 E:/hdllab/work/source/cpu.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/cpu.sv|
 !s101 -O0
@@ -82,15 +106,15 @@ Z8 !s108 1470488630.000000
 R6
 vdecode_rf
 R0
-!s110 1470488877
+!s110 1470567089
 !i10b 1
-!s100 ;m:BZkbZN<K>nO`2>6Yma3
-I8Ed29iYM=:J02A6G38n6H0
+!s100 02SzQfKg5^F@4d`<zMh0F2
+Ikd:W;[GdmW9]7Rza9TZ2;1
 R2
 !s105 decode_rf__sv_unit
 S1
 R3
-w1470488863
+w1470567078
 8E:/hdllab/work/source/stages/decode_rf_.sv
 FE:/hdllab/work/source/stages/decode_rf_.sv
 L0 2
@@ -98,7 +122,7 @@ R4
 r1
 !s85 0
 31
-!s108 1470488877.000000
+!s108 1470567089.000000
 !s107 E:/hdllab/work/source/stages/decode_rf_.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/stages/decode_rf_.sv|
 !s101 -O0
@@ -106,15 +130,15 @@ r1
 R6
 vexecute_mem
 R0
-Z9 !s110 1470488631
+R7
 !i10b 1
-!s100 Z]OPI@]KKRgMHaI94FfIh0
-IMC]H77V`zRFF_7U7FdOdA3
+!s100 eYjBYj?4fTlG>K5_?aVXY1
+IIPQKoP>=[?95HfUF`WW`T1
 R2
 !s105 execute_mem_sv_unit
 S1
 R3
-w1470483515
+w1470524529
 8E:/hdllab/work/source/stages/execute_mem.sv
 FE:/hdllab/work/source/stages/execute_mem.sv
 L0 2
@@ -122,7 +146,7 @@ R4
 r1
 !s85 0
 31
-Z10 !s108 1470488631.000000
+R8
 !s107 E:/hdllab/work/source/stages/execute_mem.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/stages/execute_mem.sv|
 !s101 -O0
@@ -130,15 +154,15 @@ Z10 !s108 1470488631.000000
 R6
 vhdu
 R0
-R7
+R9
 !i10b 1
-!s100 n>41^ddASS:1nim^9iU:n3
-IN[P0LVYn^O9>25j9CT9f72
+!s100 cOQoK2AC9eTnE1K9B1gfK3
+I;<9LmYV>GE=egF`?6a24P0
 R2
 !s105 hdu_sv_unit
 S1
 R3
-w1470485843
+w1470527011
 8E:/hdllab/work/source/hdu.sv
 FE:/hdllab/work/source/hdu.sv
 L0 1
@@ -146,7 +170,7 @@ R4
 r1
 !s85 0
 31
-R8
+R10
 !s107 E:/hdllab/work/source/hdu.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/hdu.sv|
 !s101 -O0
@@ -154,25 +178,25 @@ R8
 R6
 vmem_arbiter
 R0
-R7
+R9
 !i10b 1
 !s100 ;DH7=HebAO@KNzAa>_25f3
-IDAR?Hg41fSl3WOQ0L?A_`3
+IQbUfUlPSgzE?_o3T[`L:S2
 R2
 !s105 mem_arbiter_sv_unit
 S1
 R3
-w1470440419
-8E:/hdllab/work/source/mem_arbiter.sv
-FE:/hdllab/work/source/mem_arbiter.sv
+w1470526871
+8E:\hdllab\work\source\mem_arbiter.sv
+FE:\hdllab\work\source\mem_arbiter.sv
 L0 1
 R4
 r1
 !s85 0
 31
-R8
-!s107 E:/hdllab/work/source/mem_arbiter.sv|
-!s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/mem_arbiter.sv|
+R10
+!s107 E:\hdllab\work\source\mem_arbiter.sv|
+!s90 -reportprogress|300|-work|work|-sv|-stats=none|E:\hdllab\work\source\mem_arbiter.sv|
 !s101 -O0
 !i113 1
 R6
@@ -194,7 +218,7 @@ R4
 r1
 !s85 0
 31
-R8
+R10
 !s107 E:/hdllab/work/testbench/memory.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/testbench/memory.sv|
 !s101 -O0
@@ -202,15 +226,15 @@ R8
 R6
 vregister_file
 R0
-R7
+R9
 !i10b 1
-!s100 B=>Kl^Nb^n`XBG<J2V:?M1
-IYD702C4YbbO03cE]OJ[U:0
+!s100 WzFMekm@^VYXOnlPRG40Q0
+I^mSo<>k8BcHR<DG3=AzJ<1
 R2
 !s105 register_file_sv_unit
 S1
 R3
-w1470488591
+w1470525933
 8E:/hdllab/work/source/register_file.sv
 FE:/hdllab/work/source/register_file.sv
 L0 4
@@ -218,7 +242,7 @@ R4
 r1
 !s85 0
 31
-R8
+R10
 !s107 E:/hdllab/work/source/register_file.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/register_file.sv|
 !s101 -O0
@@ -250,15 +274,15 @@ R5
 R6
 vtestbench
 R0
-R9
+R7
 !i10b 1
-!s100 be1^Vh]Nj6NTEdTenDoZZ0
-I^V_6cXa4WK96:0biHZO?a2
+!s100 3=dVmBD;[kAUDJbIkVPo^1
+Iz^TQHgHA7?WI?_UC@nIa[2
 R2
 !s105 testbench_sv_unit
 S1
 R3
-w1470464292
+w1470527478
 8E:/hdllab/work/testbench/testbench.sv
 FE:/hdllab/work/testbench/testbench.sv
 L0 9
@@ -266,7 +290,7 @@ R4
 r1
 !s85 0
 31
-R10
+R8
 !s107 E:/hdllab/work/testbench/testbench.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/testbench/testbench.sv|
 !s101 -O0
@@ -274,7 +298,7 @@ R10
 R6
 vwrite_back_fetch
 R0
-R9
+R7
 !i10b 1
 !s100 9Qz7RIlS^WU2WJcM@VVYJ2
 IGRHKSl@11[`iNXWdz6d3C1
@@ -282,7 +306,7 @@ R2
 !s105 writeBack_fetch_sv_unit
 S1
 R3
-w1470476828
+w1470510128
 8E:/hdllab/work/source/stages/writeBack_fetch.sv
 FE:/hdllab/work/source/stages/writeBack_fetch.sv
 L0 3
@@ -290,7 +314,7 @@ R4
 r1
 !s85 0
 31
-R10
+R8
 !s107 E:/hdllab/work/source/stages/writeBack_fetch.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|E:/hdllab/work/source/stages/writeBack_fetch.sv|
 !s101 -O0

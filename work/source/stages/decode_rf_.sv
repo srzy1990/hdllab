@@ -80,6 +80,8 @@ module decode_rf (
 	logic 			self_instruct_en_buffer;
 
 	logic [15:0]	instruct_cu;
+	logic [15:0]	instruct_cu_buffer;
+	logic			instruct_cu_en_buffer;
 	logic 			mem2Reg;
 	logic			cu_end_program;
 
@@ -109,12 +111,13 @@ module decode_rf (
 	);
 	
 	always_comb begin
-		if (self_instruct_en_buffer)
-			instruct_cu = self_instruct_buffer;
+		// use the stored instruction from the either the last stall or the self-instruction first
+		if (instruct_cu_en_buffer) 
+			instruct_cu = instruct_cu_buffer;
 			
-		else if (instr_en_i) 
+		else if (instr_en_i)
 			instruct_cu = instr_i;
-		
+
 		else instruct_cu = 16'hffff;
 	end
 	
@@ -126,6 +129,7 @@ module decode_rf (
 	always_ff @ (posedge clk_i) begin
 		if(rst_i) begin
 			self_instruct_en_buffer <= 0;
+			instruct_cu_en_buffer <= 0;
 		end 
 		else begin		
 			if(~stall_i) begin	
@@ -133,8 +137,11 @@ module decode_rf (
 				programm_counter_o <= programm_counter_i;
 				next_programm_counter_o <= next_programm_counter_i;
 				
-				self_instruct_en_buffer <= self_instruct_en;
-				self_instruct_buffer <= self_instruct;
+				if (self_instruct_en) begin
+					instruct_cu_en_buffer <= 1'b1;
+					instruct_cu_buffer <= self_instruct;
+				end
+				else instruct_cu_en_buffer <= 1'b0;
 				
 				cu_mem_load_en_o <= cu_mem_load_en;
 				cu_mem_write_en_o <= cu_mem_write_en;
@@ -152,6 +159,11 @@ module decode_rf (
 				PC_to_ALU_o <= PCtoALU;
 			
 				end_program_o <= cu_end_program;
+			end
+			// if we fetched an instruction and are going to stall, we have to save it for the next clock cycle
+			else if (~instruct_cu_en_buffer & instr_en_i) begin
+				instruct_cu_en_buffer <= 1'b1;
+				instruct_cu_buffer <= instr_i;
 			end
 		end
 	end

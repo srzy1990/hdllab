@@ -5,6 +5,13 @@ Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 
 Top level modules:
 	testbench
 
+} {} {}} E:/hdllab/work/source/mem_arbiter.sv {1 {vlog -work work -sv -stats=none {E:\hdllab\work\source\mem_arbiter.sv}
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module mem_arbiter
+
+Top level modules:
+	mem_arbiter
+
 } {} {}} E:/hdllab/work/source/sign_extender.sv {1 {vlog -work work -sv -stats=none E:/hdllab/work/source/sign_extender.sv
 Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
 -- Compiling module sign_extender
@@ -12,12 +19,12 @@ Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 
 Top level modules:
 	sign_extender
 
-} {} {}} E:/hdllab/work/source/mem_arbiter.sv {1 {vlog -work work -sv -stats=none E:/hdllab/work/source/mem_arbiter.sv
+} {} {}} E:/hdllab/work/source/counter.sv {1 {vlog -work work -sv -stats=none E:/hdllab/work/source/counter.sv
 Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
--- Compiling module mem_arbiter
+-- Compiling module counter
 
 Top level modules:
-	mem_arbiter
+	counter
 
 } {} {}} E:/hdllab/work/testbench/memory.sv {1 {vlog -work work -sv -stats=none E:/hdllab/work/testbench/memory.sv
 Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
@@ -61,18 +68,18 @@ Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 
 Top level modules:
 	cpu
 
-} {} {}} E:/hdllab/work/source/ControlUnit.sv {1 {vlog -work work -sv -stats=none E:/hdllab/work/source/ControlUnit.sv
-Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
--- Compiling module controlunit
-
-Top level modules:
-	controlunit
-
 } {} {}} E:/hdllab/work/source/hdu.sv {1 {vlog -work work -sv -stats=none E:/hdllab/work/source/hdu.sv
 Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
 -- Compiling module hdu
 
 Top level modules:
 	hdu
+
+} {} {}} E:/hdllab/work/source/ControlUnit.sv {1 {vlog -work work -sv -stats=none E:/hdllab/work/source/ControlUnit.sv
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module controlunit
+
+Top level modules:
+	controlunit
 
 } {} {}}
