@@ -55,8 +55,8 @@ module write_back_fetch (
 				next_state <= ST_IDLE;
 
 				if(mem_to_reg_i) begin						
-						next_state <= ST_R_HIGH;//to do bedingung				
-					end	
+					next_state <= ST_R_HIGH;//to do bedingung				
+				end	
 			end
 			
 			ST_R_HIGH : begin

@@ -17,7 +17,7 @@ always_comb begin
 	// we do not want to fetch the next instruction if we have a self-instruct
 	stall_fetch_o = cu_stall_si_i;
 	
-	// stall decode for the second memory access withing execute stage
+	// stall decode for the second memory access within execute stage
 	stall_decode_o = x_stall_d_i;
 end 
 

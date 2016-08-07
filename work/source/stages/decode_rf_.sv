@@ -44,7 +44,7 @@ module decode_rf (
 	logic [3:0] 	rf_rd0_sel;
 	logic [3:0] 	rf_rd1_sel;
 	logic [3:0] 	rf_wr_sel;
-	logic 			rf_wr_en;
+	logic 			cu_rf_wr_en;
 	logic			sp_wr_en;
 
 	logic [7:0] 	immOut;
@@ -81,6 +81,7 @@ module decode_rf (
 
 	logic [15:0]	instruct_cu;
 	logic 			mem2Reg;
+	logic			cu_end_program;
 
 	controlunit cu (
 		.alu_status_i(alu_status_i),
@@ -103,8 +104,8 @@ module decode_rf (
 		.sp_dec_o(exec_sp_dec_o),
 		.sp_write_en_o (sp_wr_en),
 		.mem2Reg_o (mem2Reg),
-		.rf_write_en_o (rf_wr_en),
-		.end_program_o (end_program_o)		
+		.rf_write_en_o (cu_rf_wr_en),
+		.end_program_o (cu_end_program)		
 	);
 	
 	always_comb begin
@@ -114,7 +115,7 @@ module decode_rf (
 		else if (instr_en_i) 
 			instruct_cu = instr_i;
 		
-		else instruct_cu = 16'b1111;
+		else instruct_cu = 16'hffff;
 	end
 	
 	assign cu_stall_o = cu_mem_load_en || cu_mem_write_en;
@@ -144,12 +145,13 @@ module decode_rf (
 				mem2Reg_o <= mem2Reg;
 				
 				rf_wr_select_o <= rf_wr_sel;
-				rf_wr_en_o <= rf_wr_en;
+				rf_wr_en_o <= cu_rf_wr_en;
 				rf_sp_wr_en_o <= sp_wr_en;
 				ALU_op_Out_o <= ALUopOut;
 				shift_immidiate_o <= shift_imm;
 				PC_to_ALU_o <= PCtoALU;
 			
+				end_program_o <= cu_end_program;
 			end
 		end
 	end

@@ -117,6 +117,8 @@ always_ff @ (*)
 						begin
 						rf_write_en_o = 1;
 						destReg = in[10:8];
+						src1Reg = 4'h0;
+						opOut = ADD;
 						//opOut = MOV;
 						end
 

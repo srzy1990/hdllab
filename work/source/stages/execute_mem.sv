@@ -65,6 +65,7 @@ module execute_mem (
 
 			data_calc_o <= alu_out;
 			mem_to_reg_o <= mem_to_reg_i;
+			
 			rf_wr_select_o <= rf_wr_select_i;
 			rf_wr_en_o <= rf_wr_en_i;
 		end
@@ -100,8 +101,9 @@ module execute_mem (
 				else if (mem_we_i)
 					data_mem_addr_o = alu_out;
 				if(sp_inc_i)
-						sp_o <= alu_out + 32'd4;
-					else sp_o <= alu_out;	
+					sp_o <= alu_out + 32'd4;
+				else sp_o <= alu_out;	
+				rf_sp_wr_en_o = rf_sp_wr_en_i;
 			end
 			ST_STALL_F : begin
 				next_state = ST_STALL_D;	
@@ -129,7 +131,7 @@ module execute_mem (
 		.status_o (alu_status_out),
 		.set_status_i (set_alu_status_i)
 	);
-	assign rf_sp_wr_en_o = rf_sp_wr_en_i;
+
 	assign s_imm = imm_i << 2;
 	assign branch_o = s_imm + next_pc_i;
 

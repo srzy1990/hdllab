@@ -13,6 +13,12 @@ module cpu #(
 	output logic 					end_program_o								
 	);
 
+	
+	counter clock (
+		.clk_i (clk_i),
+		.rst_i (rst_i)
+	);
+	
 	assign mem_enable_o = mem_wr_en_o || mem_rd_en_o;
 	
 	// Memory Arbiter
