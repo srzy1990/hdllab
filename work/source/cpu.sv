@@ -13,7 +13,6 @@ module cpu #(
 	output logic 					end_program_o								
 	);
 
-	
 	counter clock (
 		.clk_i (clk_i),
 		.rst_i (rst_i)
@@ -30,7 +29,6 @@ module cpu #(
 	logic [15:0]	x2a_data_mem_write;
 	logic [15:0]	a2stages_data;
 	logic			a2d_instr_en;
-	logic			a2d_data_en;
 	
 	mem_arbiter arbiter (
 		.clk_i (clk_i),
@@ -38,14 +36,13 @@ module cpu #(
 		.instr_mem_en_i (wbf2a_instr_mem_en),
 		.instr_mem_addr_i (wbf2a_instr_mem_addr),
 		.data_mem_re_i (x2a_data_mem_re), 
-		.data_mem_we_i (x2a_data_mem_we),			// 0 is read
+		.data_mem_we_i (x2a_data_mem_we),
 		.data_mem_addr_i (x2a_data_mem_addr),
 		.data_mem_write_i (x2a_data_mem_write),
 		.data_i (mem_value_i),
 	
 	
 		.instr_mem_en_o (a2d_instr_en),
-		.data_mem_en_o (a2d_data_en),
 		.data_mem_write_o (mem_value_o),
 		.mem_value_o (a2stages_data),
 		.mem_addr_o (mem_addr_o),
@@ -66,7 +63,6 @@ module cpu #(
 	
 	logic [31:0]	wbf_next_pc;
 	logic [31:0]	wbf_write_back;
-	logic [31:0]	wbf_act_pc;
 	
 	logic			hdu2wbf_stall_fetch;
 	logic			hdu2wbf_stall_pc;
@@ -81,14 +77,13 @@ module cpu #(
 		.instr_mem_en_i (a2d_instr_en), // TODO braucht der den wirklich?
 		.stall_fetch_i (hdu2wbf_stall_fetch),
 		.stall_pc_i (hdu2wbf_stall_pc),
-		
 		.branch_pc_i (wbf_branch_pc),
 		.branch_i (wbf_branch),
+		
 		.instr_mem_addr_o (wbf2a_instr_mem_addr),
 		.next_pc_o (wbf_next_pc),
 		.write_back_o (wbf_write_back),
-		.instr_mem_re_o (wbf2a_instr_mem_en),
-		.pc_out (wbf_act_pc)		
+		.instr_mem_re_o (wbf2a_instr_mem_en)
 	);
 
 	logic [31:0]	d_rf2x_reg_a;
@@ -97,7 +92,6 @@ module cpu #(
 	logic [1:0] 	d_rf2x_ALU_op_Out;
 	logic 			d_rf2x_shift_immidiate;
 	logic 			d_rf2x_imm_to_alu;
-	logic [31:0]	d_rf2x_pc;
 	logic [31:0]	d_rf2x_next_pc;
 	logic [3:0] 	x2d_rf_alu_status;
  	logic			cu_2_x_mem_load;
@@ -114,9 +108,6 @@ module cpu #(
 	logic 			x2d_rf_rf_wr_en;
 	logic 			x2d_rf_rf_sp_wr_en;	
 	
-	// neue stalls
-	logic 			cu2hdu_stall;		
-	//logic 			hdu2cu_stall;
 	logic			cu2hdu_stall_si;
 	logic			hdu2drf_stall_decode;
 
@@ -126,7 +117,6 @@ module cpu #(
 		.stall_i (hdu2drf_stall_decode),
 		.instr_i (a2stages_data),
 		.instr_en_i (a2d_instr_en),
-		.programm_counter_i (wbf_act_pc),
 		.next_programm_counter_i (wbf_next_pc),
 		.write_back_i (wbf_write_back),
 		.alu_status_i(x2d_rf_alu_status),
@@ -134,11 +124,9 @@ module cpu #(
 		.rf_wr_select_i (x2d_rf_rf_wr_select),
 		.rf_wr_en_i (x2d_rf_rf_wr_en),
 		.rf_sp_wr_en_i (x2d_rf_rf_sp_wr_en),
-		//.cu_stall_i (hdu2cu_stall),
 		
 		.reg_a_o (d_rf2x_reg_a),
 		.reg_b_o (d_rf2x_reg_b),
-		.programm_counter_o (d_rf2x_pc),
 		.next_programm_counter_o (d_rf2x_next_pc),
 		.immidiate_value_o (d_rf2x_immidiate_value),
 		.ALU_op_Out_o (d_rf2x_ALU_op_Out),
@@ -148,7 +136,6 @@ module cpu #(
 		.cu_mem_write_en_o (cu_2_x_mem_write),
 		.cu_set_ALU_cond_o (cu_2_x_set_ALU_status),
 		.cu_branch_o(wbf_branch),
-		.cu_stall_o (cu2hdu_stall),
 		.cu_stall_self_instruct_o (cu2hdu_stall_si),
 		.x_imm_to_alu_o (d_rf2x_imm_to_alu),
 		.exec_sp_dec_o (x2d_wb_sp_dec),
@@ -159,19 +146,15 @@ module cpu #(
 		.end_program_o(end_program_o)
 	);
 
-	logic			x2hdu_stall;
 	logic 			x2hdu_stall_d_rf;
-	logic			x2hdu_release;
-	logic			x2hdu_stall_pc;
 
 	execute_mem x (
-		.pc_i(d_rf2x_pc),
+		.clk_i(clk_i),
+		.rst_i(rst_i),
 		.reg_a_i (d_rf2x_reg_a),
 		.reg_b_i (d_rf2x_reg_b),
 		.imm_i (d_rf2x_immidiate_value),
 		.next_pc_i (d_rf2x_next_pc),
-		.clk_i(clk_i),
-		.rst_i(rst_i),
 		.pc_to_alu (d_rf2x_pc_to_alu),
 		.imm_to_alu (d_rf2x_imm_to_alu),
 		.s_imm_to_alu (d_rf2x_shift_immidiate),
@@ -198,19 +181,12 @@ module cpu #(
 		.mem_to_reg_o (wbf_mem_to_reg),
 		.rf_wr_select_o(x2d_rf_rf_wr_select),
 		.rf_wr_en_o (x2d_rf_rf_wr_en),
-		.rf_sp_wr_en_o (x2d_rf_rf_sp_wr_en),
-		.release_fetch_o (x2hdu_release),
-		.stall_pc_o (x2hdu_stall_pc)
+		.rf_sp_wr_en_o (x2d_rf_rf_sp_wr_en)
 	);
 
 	hdu hdu1 (
-		.clk_i(clk_i),
-		.rst_i (rst_i),
-		.x_stall_pc_i(x2hdu_stall_pc),
-		.cu_stall_i(cu2hdu_stall),
 		.cu_stall_si_i (cu2hdu_stall_si),
 		.x_stall_d_i (x2hdu_stall_d_rf),
-		.x_release_f_i (x2hdu_release),
 
 		.stall_fetch_o (hdu2wbf_stall_fetch),
 		.stall_decode_o (hdu2drf_stall_decode),

@@ -16,7 +16,6 @@ module write_back_fetch (
 	
 	output logic [31:0] instr_mem_addr_o,
 	output logic [31:0] next_pc_o,
-	output logic [31:0] pc_out,
 	output logic [31:0] write_back_o,
 	output logic 		instr_mem_re_o
 );
@@ -32,6 +31,7 @@ module write_back_fetch (
 	
 	logic [2:0] state;
 	logic [2:0] next_state;
+	logic pc_en;
 
 	always_ff @(posedge clk_i) begin
 		if(rst_i) begin
@@ -40,14 +40,13 @@ module write_back_fetch (
 		end	else begin
 			state <= next_state;
 
-			if(next_state == ST_R_HIGH) begin
-					low_reg <= data_read_i;	
-			end
+			if(next_state == ST_R_HIGH)
+				low_reg <= data_read_i;	
 		end
 	end	
 
 	always_comb begin
-		read_data =0;
+		read_data = 0;
 		instr_mem_re_o = ~stall_fetch_i;
 
 		case(state)
@@ -55,9 +54,8 @@ module write_back_fetch (
 				read_data = {16'h0, data_read_i}; 
 				next_state <= ST_IDLE;
 
-				if(mem_to_reg_i) begin						
+				if(mem_to_reg_i)					
 					next_state <= ST_R_HIGH;//to do bedingung				
-				end	
 			end
 			
 			ST_R_HIGH : begin
@@ -68,21 +66,22 @@ module write_back_fetch (
 	end
 	
 	assign write_back_o = mem_to_reg_i ? read_data : data_calc_i;
-	assign next_pc_o = temp_pc;
 	
-	assign temp_pc = branch_i ? branch_pc_i : programm_counter +32'd2;
-	assign instr_mem_addr_o = programm_counter;
-	assign pc_out = programm_counter;
+	// TODO: nicht schön -> aufräumen
+	assign pc_en = instr_mem_en_i & ~stall_pc_i;
+	assign next_pc_o = temp_pc + 32'd2;
+	
+	assign temp_pc = branch_i ? branch_pc_i : programm_counter + 32'd2;
+	assign instr_mem_addr_o = (pc_en & instr_mem_re_o)? temp_pc : programm_counter;
 	
 	always_ff@(posedge clk_i) begin
 		
-		if(rst_i) 
+		if(rst_i)
 			programm_counter <=0;
-			
-		// update the PC if successfully red the next instruction and we are going to use the instruction (no decode stall)
-		else begin 
-			if(instr_mem_en_i & ~ stall_pc_i)		
-				programm_counter <= temp_pc;
+
+		else if(pc_en) begin	
+			// update the PC if successfully red the next instruction and the decode phase is not stalled
+			programm_counter <= temp_pc;
 		end
 	end
 endmodule

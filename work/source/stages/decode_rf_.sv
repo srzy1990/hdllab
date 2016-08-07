@@ -4,7 +4,6 @@ module decode_rf (
 	input logic			rst_i,
 	input logic			stall_i,
 	input logic [15:0]	instr_i,
-	input logic [31:0]  programm_counter_i,
 	input logic [31:0]  next_programm_counter_i,
 	input logic [31:0]  write_back_i,
 	input logic [3:0] 	alu_status_i,
@@ -13,7 +12,6 @@ module decode_rf (
 
 	output logic [31:0]  reg_a_o,
 	output logic [31:0]  reg_b_o,
-	output logic [31:0]	 programm_counter_o,
 	output logic [31:0]  next_programm_counter_o,
 	output logic [31:0]  immidiate_value_o,
 	output logic [1:0] 	 ALU_op_Out_o,
@@ -30,7 +28,6 @@ module decode_rf (
 	output logic 		 cu_stall_o,
 	output logic 		 end_program_o,
 	output logic		 cu_stall_self_instruct_o,
-
 
 	input logic [3:0] 	rf_wr_select_i,
 	input logic 	  	rf_wr_en_i,
@@ -76,8 +73,6 @@ module decode_rf (
 	logic 			cu_branch;
 	logic 			self_instruct_en;
 	logic [15:0]	self_instruct;
-	logic [15:0]	self_instruct_buffer;
-	logic 			self_instruct_en_buffer;
 
 	logic [15:0]	instruct_cu;
 	logic [15:0]	instruct_cu_buffer;
@@ -124,17 +119,15 @@ module decode_rf (
 	assign cu_stall_o = cu_mem_load_en || cu_mem_write_en;
 	assign cu_stall_self_instruct_o = self_instruct_en;
 	assign reg_a_o = reg_a; 
-	assign reg_b_o =  reg_b;
+	assign reg_b_o = reg_b;
 
 	always_ff @ (posedge clk_i) begin
-		if(rst_i) begin
-			self_instruct_en_buffer <= 0;
-			instruct_cu_en_buffer <= 0;
-		end 
+		if(rst_i) 
+			instruct_cu_en_buffer <= 1'b0;
+		
 		else begin		
 			if(~stall_i) begin	
 				immidiate_value_o <= {24'd0, immOut};
-				programm_counter_o <= programm_counter_i;
 				next_programm_counter_o <= next_programm_counter_i;
 				
 				if (self_instruct_en) begin
@@ -160,8 +153,8 @@ module decode_rf (
 			
 				end_program_o <= cu_end_program;
 			end
-			// if we fetched an instruction and are going to stall, we have to save it for the next clock cycle
 			else if (~instruct_cu_en_buffer & instr_en_i) begin
+				// if we fetched an instruction and are going to stall, we have to save it for the next clock cycle
 				instruct_cu_en_buffer <= 1'b1;
 				instruct_cu_buffer <= instr_i;
 			end

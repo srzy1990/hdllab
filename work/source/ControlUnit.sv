@@ -119,6 +119,7 @@ always_ff @ (*)
 						destReg = in[10:8];
 						src1Reg = 4'h0;
 						opOut = ADD;
+						immOut = 8'h44;
 						end
 
 					//compare
@@ -278,7 +279,10 @@ always_ff @ (*)
 					
 			// Type 18
 			4'b1110:
+				begin
 				immOut = in[10:0];
+				branch = 1;
+				end
 			
 			// Type 19: NOP
 			4'b1111:
