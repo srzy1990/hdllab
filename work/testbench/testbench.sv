@@ -11,7 +11,7 @@ module testbench();
 // PARAMETERS
 parameter MEM_DEPTH   		= 2**12;	//8192 Bytes 4096*2B
 parameter ADDR_WIDTH   		= $clog2(MEM_DEPTH);
-parameter string filename	= "four.bin";
+parameter string filename	= "bn.bin";
 
 // INTERNAL SIGNALS
 integer file, status; // needed for file-io

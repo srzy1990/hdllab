@@ -69,6 +69,7 @@ module cpu #(
 	logic [31:0]	wbf_act_pc;
 	
 	logic			hdu2wbf_stall_fetch;
+	logic			hdu2wbf_stall_pc;
 	
 	write_back_fetch wbf (
 		
@@ -79,6 +80,7 @@ module cpu #(
 		.mem_to_reg_i (wbf_mem_to_reg),
 		.instr_mem_en_i (a2d_instr_en), // TODO braucht der den wirklich?
 		.stall_fetch_i (hdu2wbf_stall_fetch),
+		.stall_pc_i (hdu2wbf_stall_pc),
 		
 		.branch_pc_i (wbf_branch_pc),
 		.branch_i (wbf_branch),
@@ -210,8 +212,9 @@ module cpu #(
 		.x_stall_d_i (x2hdu_stall_d_rf),
 		.x_release_f_i (x2hdu_release),
 
-		.stall_fetch_o(hdu2wbf_stall_fetch),
-		.stall_decode_o(hdu2drf_stall_decode)
+		.stall_fetch_o (hdu2wbf_stall_fetch),
+		.stall_decode_o (hdu2drf_stall_decode),
+		.stall_pc_o (hdu2wbf_stall_pc)
 	);
 	
 endmodule

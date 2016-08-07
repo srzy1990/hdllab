@@ -84,9 +84,9 @@ always_ff @ (*)
 	if(in == 0) end_program_o = 1;
 
 
-		case (in[15:12])
+		casez (in[15:12])
 			// Type 1: Move shifted register
-			4'b000x:
+			4'b000?:
 				begin
 				opOut = LSL;
 				immOut = in[10:6];
@@ -107,7 +107,7 @@ always_ff @ (*)
 			
 			
 			// Type 3; move/compare/add/subtract immediate
-			4'b001x:
+			4'b001?:
 				begin
 				immediate = 1;
 				immOut = in[7:0];
@@ -119,7 +119,6 @@ always_ff @ (*)
 						destReg = in[10:8];
 						src1Reg = 4'h0;
 						opOut = ADD;
-						//opOut = MOV;
 						end
 
 					//compare
@@ -129,7 +128,7 @@ always_ff @ (*)
 						opOut = CMP;
 						end
 
-					2'b1x:
+					2'b1?:
 						begin
 						src1Reg = in[10:8];
 						destReg = in[10:8];
@@ -180,18 +179,16 @@ always_ff @ (*)
 				end			
 
 			// Type 9: <load/Store with immediate offset
-			4'b011x:
+			4'b011?:
 				begin			
 				mem_load = in[11];
 				mem_write = ~in[11];
 				immediate = 1;
-				shiftImm = 1;
+				shiftImm = 1; // TODO: wirklich shift? 
 				immOut = in[10:6];	
 				src1Reg = in[5:3];
-				rf_write_en_o = 1;
-				destReg = in[2:0];
+				src2Reg = in[2:0];
 				opOut = ADD;
-				mem2Reg_o = 1;
 				end
 			// Type 11 SP-relative Load/Store
 			// input 9701

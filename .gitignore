@@ -57,3 +57,5 @@ work/_lib1_28.qpg
 hdllab.cr.mti
 *.mpf
 *.qpg
+*.qdb
+hdllab.cr.mti

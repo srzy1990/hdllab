@@ -9,6 +9,7 @@ module write_back_fetch (
 	input logic			instr_mem_en_i,
 	input logic 	 	mem_to_reg_i,
 	input logic			stall_fetch_i,
+	input logic			stall_pc_i,
 	
 	input logic [31:0] 	branch_pc_i,
 	input logic 		branch_i,
@@ -75,15 +76,13 @@ module write_back_fetch (
 	
 	always_ff@(posedge clk_i) begin
 		
-		if(rst_i) begin
+		if(rst_i) 
 			programm_counter <=0;
 			
-		end
-		// update the PC if successfully red the next instruction
+		// update the PC if successfully red the next instruction and we are going to use the instruction (no decode stall)
 		else begin 
-			if(instr_mem_en_i)begin		
+			if(instr_mem_en_i & ~ stall_pc_i)		
 				programm_counter <= temp_pc;
-			end
 		end
 	end
 endmodule
