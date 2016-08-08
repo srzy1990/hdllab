@@ -18,7 +18,7 @@ module mem_arbiter (
 	output logic [15:0] mem_value_o,
 	
 	// values going to mem
-	output logic [31:0]	mem_addr_o,
+	output logic [11:0]	mem_addr_o,
 	output logic		mem_re_o,
 	output logic		mem_we_o,
 	output logic [15:0]	data_mem_write_o
@@ -45,7 +45,7 @@ always_comb begin
 			mem_re_o <= data_mem_re_i;
 			
 			if (data_mem_we_i)
-				data_mem_write_o <= data_mem_write_i;
+				data_mem_write_o <= {data_mem_write_i[7:0],data_mem_write_i[15:8]};
 		end
 		else if (instr_mem_en_i) begin
 			mem_addr_o <= instr_mem_addr_i >> 1;

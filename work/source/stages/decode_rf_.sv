@@ -35,7 +35,9 @@ module decode_rf (
 		
 	output logic [3:0] 	rf_wr_select_o,
 	output logic 	   	rf_wr_en_o,
-	output logic 	   	rf_sp_wr_en_o		
+	output logic 	   	rf_sp_wr_en_o,
+	output logic		stall_pc_o,
+	output logic		sign_extend_en_o		
 );
 	//register_file logic
 	logic [3:0] 	rf_rd0_sel;
@@ -79,11 +81,12 @@ module decode_rf (
 	logic			instruct_cu_en_buffer;
 	logic 			mem2Reg;
 	logic			cu_end_program;
+	logic			cu_sign_extend;
 
 	controlunit cu (
 		.alu_status_i(alu_status_i),
 		.in (instruct_cu),
-		.cu_input_en_i (1),
+		.cu_input_en_i (1'b1),
 		.immediate (use_immidiate),
 		.PCtoALU (PCtoALU),
 		.shiftImm(shift_imm),
@@ -102,7 +105,8 @@ module decode_rf (
 		.sp_write_en_o (sp_wr_en),
 		.mem2Reg_o (mem2Reg),
 		.rf_write_en_o (cu_rf_wr_en),
-		.end_program_o (cu_end_program)		
+		.end_program_o (cu_end_program),	
+		.sign_extend_en_o (cu_sign_extend)	
 	);
 	
 	always_comb begin
@@ -116,11 +120,15 @@ module decode_rf (
 		else instruct_cu = 16'hffff;
 	end
 	
+	
 	assign cu_stall_o = cu_mem_load_en || cu_mem_write_en;
+
+	// we do not want to use the next PC if this is a load instruction (cannot fetch)
+	assign stall_pc_o = cu_mem_load_en & ~stall_i; // || cu_mem_write_en;
 	assign cu_stall_self_instruct_o = self_instruct_en;
 	assign reg_a_o = reg_a; 
 	assign reg_b_o = reg_b;
-
+	assign next_programm_counter_o = next_programm_counter_i;
 	always_ff @ (posedge clk_i) begin
 		if(rst_i) 
 			instruct_cu_en_buffer <= 1'b0;
@@ -128,7 +136,7 @@ module decode_rf (
 		else begin		
 			if(~stall_i) begin	
 				immidiate_value_o <= {24'd0, immOut};
-				next_programm_counter_o <= next_programm_counter_i;
+				
 				
 				if (self_instruct_en) begin
 					instruct_cu_en_buffer <= 1'b1;
@@ -152,6 +160,7 @@ module decode_rf (
 				PC_to_ALU_o <= PCtoALU;
 			
 				end_program_o <= cu_end_program;
+				sign_extend_en_o <= cu_sign_extend;
 			end
 			else if (~instruct_cu_en_buffer & instr_en_i) begin
 				// if we fetched an instruction and are going to stall, we have to save it for the next clock cycle

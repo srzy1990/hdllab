@@ -20,7 +20,7 @@ module write_back_fetch (
 	output logic 		instr_mem_re_o
 );
 	
-	logic [31:0] programm_counter;
+	
 	
 	logic [15:0] low_reg;
 	logic [31:0] read_data;
@@ -31,8 +31,7 @@ module write_back_fetch (
 	
 	logic [2:0] state;
 	logic [2:0] next_state;
-	logic pc_en;
-
+	
 	// WRITEBACK STAGE
 	always_ff @(posedge clk_i) begin
 		if(rst_i) begin
@@ -71,7 +70,7 @@ module write_back_fetch (
 	
 	// FETCH STAGE
 	assign instr_mem_re_o = ~stall_fetch_i;
-	assign temp_pc = branch_i ? branch_pc_i : programm_counter + 32'd2;
+	/*assign temp_pc = branch_i ? branch_pc_i : programm_counter + 32'd2;
 	assign pc_en = instr_mem_en_i & ~stall_pc_i;
 	assign next_pc_o = temp_pc + 32'd2;
 	
@@ -93,6 +92,26 @@ module write_back_fetch (
 		else if(pc_en) begin	
 			// update the PC if successfully red the next instruction and the decode phase is not stalled
 			programm_counter <= temp_pc;
+		end
+	end*/
+	logic [31:0] 	pc;
+	logic [31:0]	pc_buffer;
+	logic 			buff;
+
+	
+	assign buff = ~ (branch_i || (instr_mem_en_i & ~stall_pc_i) /*& ~stall_fetch_i*/) ;
+	assign temp_pc =  branch_i ? branch_pc_i : next_pc_o;
+	assign pc = buff ? pc_buffer : temp_pc;
+	assign instr_mem_addr_o = pc;
+	
+	always_ff @(posedge clk_i) begin
+		if (rst_i) begin
+			next_pc_o <= 0;
+			pc_buffer <= 0;
+		end
+		else begin
+			next_pc_o <= pc + 32'd2;
+			pc_buffer <= pc;
 		end
 	end
 endmodule
