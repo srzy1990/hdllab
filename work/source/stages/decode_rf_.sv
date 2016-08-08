@@ -110,8 +110,11 @@ module decode_rf (
 	);
 	
 	always_comb begin
+		// we have a branch instruction, so we are going to Flush the pipeline stages
+		if (cu_branch_o)
+			instruct_cu = 16'hffff;
 		// use the stored instruction from the either the last stall or the self-instruction first
-		if (instruct_cu_en_buffer) 
+		else if (instruct_cu_en_buffer) 
 			instruct_cu = instruct_cu_buffer;
 			
 		else if (instr_en_i)
@@ -129,6 +132,7 @@ module decode_rf (
 	assign reg_a_o = reg_a; 
 	assign reg_b_o = reg_b;
 	assign next_programm_counter_o = next_programm_counter_i;
+	
 	always_ff @ (posedge clk_i) begin
 		if(rst_i) 
 			instruct_cu_en_buffer <= 1'b0;
