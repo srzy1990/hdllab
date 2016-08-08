@@ -110,6 +110,8 @@ module cpu #(
 	
 	logic			cu2hdu_stall_si;
 	logic			hdu2drf_stall_decode;
+	logic			d2hdu_stall_pc;
+	logic			cu2x_sign_extend_en;
 
 	decode_rf d_rf (
 		.clk_i (clk_i),
@@ -143,7 +145,9 @@ module cpu #(
 		.rf_wr_select_o (d_rf2x_rf_wr_select),
 		.rf_wr_en_o (d_rf2x_rf_wr_en),
 		.rf_sp_wr_en_o (d_rf2x_rf_sp_wr_en),
-		.end_program_o(end_program_o)
+		.stall_pc_o (d2hdu_stall_pc),
+		.end_program_o(end_program_o),
+		.sign_extend_en_o (cu2x_sign_extend_en)
 	);
 
 	logic 			x2hdu_stall_d_rf;
@@ -168,6 +172,7 @@ module cpu #(
 		.rf_wr_select_i(d_rf2x_rf_wr_select),
 		.rf_wr_en_i (d_rf2x_rf_wr_en),
 		.rf_sp_wr_en_i (d_rf2x_rf_sp_wr_en),
+		.sign_extend_en_i (cu2x_sign_extend_en),
 	
 		.branch_o (wbf_branch_pc),
 		.data_calc_o (wbf_data_calc),
@@ -187,6 +192,7 @@ module cpu #(
 	hdu hdu1 (
 		.cu_stall_si_i (cu2hdu_stall_si),
 		.x_stall_d_i (x2hdu_stall_d_rf),
+		.d_stall_pc_i (d2hdu_stall_pc),
 
 		.stall_fetch_o (hdu2wbf_stall_fetch),
 		.stall_decode_o (hdu2drf_stall_decode),

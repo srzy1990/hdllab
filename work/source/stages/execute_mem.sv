@@ -11,6 +11,7 @@ module execute_mem (
 	input logic 		pc_to_alu,
 	input logic 		imm_to_alu,
 	input logic 		s_imm_to_alu,
+	input logic			sign_extend_en_i,
 	input logic 		sp_inc_i,
 	input logic [1:0] 	opcode_i,			
 	input logic 		signed_i,
@@ -43,6 +44,8 @@ module execute_mem (
 	logic [31:0] alu_out;
 
 	logic [31:0] s_imm; // shifted immediate
+	logic [31:0] signed_imm;
+	logic		alu_status_o;
 	
 	// FSM
 	parameter ST_OP_CODE_HANDLING = 1;
@@ -62,6 +65,7 @@ module execute_mem (
 			mem_to_reg_o <= mem_to_reg_i;	
 			rf_wr_select_o <= rf_wr_select_i;
 			rf_wr_en_o <= rf_wr_en_i;
+			alu_status_out <= alu_status_o;
 		end
 	end
 	
@@ -105,12 +109,17 @@ module execute_mem (
 		.opcode_i (opcode_i),
 		.signed_i (signed_i),
 		.data_o (alu_out),
-		.status_o (alu_status_out),
+		.status_o (alu_status_o),
 		.set_status_i (set_alu_status_i)
 	);
 
+	sign_extender #(.width(8)) extender (
+		.data_i (imm_i),
+		.data_o (signed_imm)
+	);
+
 	assign s_imm = imm_i << 2;
-	assign branch_o = (imm_i << 1) + next_pc_i;
+	assign branch_o = sign_extend_en_i? ((signed_imm << 1) + next_pc_i) : ((imm_i << 1) + next_pc_i);
 
 	assign mem_re_o = mem_re_i;	
 	assign mem_we_o = mem_we_i;

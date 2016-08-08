@@ -31,8 +31,8 @@ output logic [15:0]		self_instruct_o,
 output logic 			self_instruct_en_o,
 output logic			sp_dec_o,
 output logic			end_program_o,
-output logic 			rf_write_en_o
-
+output logic 			rf_write_en_o,
+output logic			sign_extend_en_o
 );
 
 // PARAMETERS
@@ -77,6 +77,7 @@ always_ff @ (*)
 	self_instruct_o = 0;
 	mem2Reg_o = 0;
 	end_program_o = 0;
+	sign_extend_en_o = 0;
 
 	if (cu_input_en_i)
 	begin
@@ -119,7 +120,7 @@ always_ff @ (*)
 						destReg = in[10:8];
 						src1Reg = 4'h0;
 						opOut = ADD;
-						immOut = 8'h44;
+						immOut = 8'd17;
 						end
 
 					//compare
@@ -188,7 +189,14 @@ always_ff @ (*)
 				shiftImm = 1; // TODO: wirklich shift? 
 				immOut = in[10:6];	
 				src1Reg = in[5:3];
-				src2Reg = in[2:0];
+				if (mem_load)
+					begin
+					destReg = in[2:0];
+					mem2Reg_o = 1;
+					rf_write_en_o = 1;
+					end
+				else
+					src2Reg = in[2:0];
 				opOut = ADD;
 				end
 			// Type 11 SP-relative Load/Store
@@ -274,9 +282,11 @@ always_ff @ (*)
 				end					
 			// Type 16
 			4'b1101:
-			
+				begin
 				branch = ( z || (n && ~v) || (~n && v));
-					
+				immOut = in[7:0];
+				sign_extend_en_o = 1;
+				end					
 			// Type 18
 			4'b1110:
 				begin

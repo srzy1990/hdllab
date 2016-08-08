@@ -39,17 +39,16 @@ logic [31:0] lr;
 always_ff@(negedge clk) begin
 	if (rst == 1'b1) begin
 		register[0] <= 32'h0;
-		register[1] <= 32'h11111111;
-		register[2] <= 32'h22222222;
-		register[3] <= 32'h33333333;
-		register[4] <= 32'h44444444;
-		register[5] <= 32'h55555555;
-		register[6] <= 32'h66666666;
-		//	register[7] <= 32'h0;
-		//	lr <= 32'h0;
+		register[1] <= 32'h0;
+		register[2] <= 32'h0;
+		register[3] <= 32'h0;
+		register[4] <= 32'h0;
+		register[5] <= 32'h0;
+		register[6] <= 32'h0;
+		register[7] <= 32'h0;
+		lr <= 32'h0;
 		sp <= 32'h1ffe;
-		register[7] <= 32'h01020707;
-		lr <= 32'heeeeffff;	
+
 	end
 	else begin
 		if (write_en==1'b1) begin
