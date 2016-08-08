@@ -33,6 +33,7 @@ module write_back_fetch (
 	logic [2:0] next_state;
 	logic pc_en;
 
+	// WRITEBACK STAGE
 	always_ff @(posedge clk_i) begin
 		if(rst_i) begin
 			state = ST_IDLE;
@@ -47,7 +48,6 @@ module write_back_fetch (
 
 	always_comb begin
 		read_data = 0;
-		instr_mem_re_o = ~stall_fetch_i;
 
 		case(state)
 			ST_IDLE : begin
@@ -68,11 +68,20 @@ module write_back_fetch (
 	assign write_back_o = mem_to_reg_i ? read_data : data_calc_i;
 	
 	// TODO: nicht schön -> aufräumen
+	
+	// FETCH STAGE
+	assign instr_mem_re_o = ~stall_fetch_i;
+	assign temp_pc = branch_i ? branch_pc_i : programm_counter + 32'd2;
 	assign pc_en = instr_mem_en_i & ~stall_pc_i;
 	assign next_pc_o = temp_pc + 32'd2;
 	
-	assign temp_pc = branch_i ? branch_pc_i : programm_counter + 32'd2;
-	assign instr_mem_addr_o = (pc_en & instr_mem_re_o)? temp_pc : programm_counter;
+	always_comb begin
+		if(branch_i)
+			instr_mem_addr_o = branch_pc_i;
+		else if (pc_en & instr_mem_re_o)
+			instr_mem_addr_o = temp_pc;
+		else instr_mem_addr_o = programm_counter;
+	end
 	
 	always_ff@(posedge clk_i) begin
 		
