@@ -87,7 +87,7 @@ always_ff @ (*)
 
 		casez (in[15:12])
 			// Type 1: Move shifted register
-			4'b000?:
+			4'b0000:
 				begin
 				opOut = LSL;
 				immOut = in[10:6];
@@ -101,9 +101,9 @@ always_ff @ (*)
 				opOut = ADD;
 				srcDestReg;
 				if (immediate) 
-					immOut = in[8:5];
+					immOut = in[8:6];
 				else
-					src2Reg = in[8:5];
+					src2Reg = in[8:6];
 				end
 			
 			

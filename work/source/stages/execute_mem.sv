@@ -52,7 +52,7 @@ module execute_mem (
 	parameter ST_RW_HIGH = 2;
 	logic [2:0] state;
 	logic [2:0] next_state;
-
+	assign alu_status_out = alu_status_o;
 	always_ff @(posedge clk_i) begin
 		if(rst_i) 
 			state <= ST_OP_CODE_HANDLING;
@@ -65,7 +65,7 @@ module execute_mem (
 			mem_to_reg_o <= mem_to_reg_i;	
 			rf_wr_select_o <= rf_wr_select_i;
 			rf_wr_en_o <= rf_wr_en_i;
-			alu_status_out <= alu_status_o;
+		//	alu_status_out <= alu_status_o;
 		end
 	end
 	
