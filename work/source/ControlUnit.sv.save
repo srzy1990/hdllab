@@ -9,7 +9,7 @@ module controlunit(
 // INPUTS
 input logic [15:0]		in,
 input logic [3:0] 		alu_status_i,
-input logic				cu_input_en_i,
+input logic			cu_input_en_i,
 input logic 			is_self_instruct_i,
 
 // OUTPUTS
@@ -32,8 +32,6 @@ output logic 			self_instruct_en_o,
 output logic			sp_inc_o,
 output logic			end_program_o,
 output logic 			rf_write_en_o,
-output logic 			rf_mov_r2r_en_o,
-output logic			rf_mov_i2r_en_o,
 output logic			sign_extend_en_o
 );
 
@@ -73,7 +71,7 @@ always_ff @ (*)
 	immOut = 0;
 	src1Reg = 0;
 	src2Reg = 0;
-	destReg = 4'hf;
+	destReg = 0;
 	PCtoALU = 0;
 	opOut = 0;
 	sp_inc_o = 0;
@@ -246,8 +244,6 @@ always_ff @ (*)
 					opOut = in[7] ? SUB : ADD;
 					immOut = in[6:0];
 					shiftImm = 1;
-					destReg = SP;
-					rf_write_en_o = 1;
 					end
 				else
 					// Type 14: Push/Pop Registers
@@ -281,10 +277,10 @@ always_ff @ (*)
 						sp_inc_o = 1;
 						immOut = 0;
 						rf_write_en_o = 1;
-						destReg = 4'b0111;
-						// self instruct 16'hb001
+						destReg = 0'b111;
+						// self instruct 16'haf00
 						self_instruct_en_o = 1;
-						self_instruct_o = 16'b1011000000000001;
+						self_instruct_o = 16'b1010111100000000;
 						end
 					end
 				end					

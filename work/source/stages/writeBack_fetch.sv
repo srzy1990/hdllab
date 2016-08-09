@@ -69,16 +69,23 @@ module write_back_fetch (
 	
 	assign write_back_o = mem_to_reg_i ? read_data : data_calc_i;
 	
-	// TODO: nicht schön -> aufräumen
-	
 	// FETCH STAGE
 	assign instr_mem_re_o = ~stall_fetch_i;
 
-	assign buff = ~ (branch_i || (instr_mem_en_i & ~stall_pc_i) /*& ~stall_fetch_i*/) ;
-	assign temp_pc =  branch_i ? branch_pc_i : next_pc_o;
-	assign pc = buff ? pc_buffer : temp_pc;
-	assign instr_mem_addr_o = pc;
-
+	always_comb begin
+		if (rst_i) begin
+			buff = 1'b0;
+			temp_pc = 32'd0;
+			pc = 32'd0;
+			instr_mem_addr_o = 32'd0;
+		end
+		else begin
+			buff = ~ (branch_i || (instr_mem_en_i & ~stall_pc_i) /*& ~stall_fetch_i*/) ;
+			temp_pc =  branch_i ? branch_pc_i : next_pc_o;
+			pc = buff ? pc_buffer : temp_pc;
+			instr_mem_addr_o = pc;
+		end
+	end
 	
 	always_ff @(posedge clk_i) begin
 		if (rst_i) begin

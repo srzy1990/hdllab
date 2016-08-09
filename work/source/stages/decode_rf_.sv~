@@ -21,7 +21,7 @@ module decode_rf (
 	output logic 		 cu_mem_write_en_o,
 	output logic		 cu_set_ALU_cond_o,
 	output logic		 cu_branch_o,
-	output logic 	 	 exec_sp_dec_o,
+	output logic 	 	 exec_sp_inc_o,
 	output logic		 mem2Reg_o,
 	
 	output logic		 x_imm_to_alu_o,
@@ -35,7 +35,9 @@ module decode_rf (
 		
 	output logic [3:0] 	rf_wr_select_o,
 	output logic 	   	rf_wr_en_o,
-	output logic 	   	rf_sp_wr_en_o		
+	output logic 	   	rf_sp_wr_en_o,
+	output logic		stall_pc_o,
+	output logic		sign_extend_en_o		
 );
 	//register_file logic
 	logic [3:0] 	rf_rd0_sel;
@@ -52,15 +54,22 @@ module decode_rf (
 	logic [31:0]	reg_a;
 	logic [31:0]	reg_b;
 
+
+	logic 			mov_r2r_enable;
+	logic			mov_i2r_enable;
+
+	logic 			mov_r2r_enable_buffer;
+	logic [3:0]		mov_sel_wb_buffer;
+
 	register_file rf(
 		.clk (clk_i),
 		.rst (rst_i),	
 		.stall_i (stall_i),			// stall values for the second memory access of execute stage
 		.rd0_select (rf_rd0_sel),
 		.rd1_select (rf_rd1_sel),
-		.write_en (rf_wr_en_i),
-		.wr_select (rf_wr_select_i),
-		.data_in (write_back_i),
+		.write_en (rf_wr_en_i|| mov_i2r_enable||mov_r2r_enable_buffer),
+		.wr_select (mov_r2r_enable ? rf_wr_select_o : rf_wr_select_i ),
+		.data_in (mov_r2r_enable_buffer ?  reg_a : mov_i2r_enable ? immOut:   write_back_i),
 		.sp_in (wb_sp_i),
 		.data_out0 (reg_a),
 		.data_out1 (reg_b),
@@ -73,17 +82,20 @@ module decode_rf (
 	logic 			cu_branch;
 	logic 			self_instruct_en;
 	logic [15:0]	self_instruct;
+	logic 			self_instruct_en_buffer;
 
 	logic [15:0]	instruct_cu;
 	logic [15:0]	instruct_cu_buffer;
 	logic			instruct_cu_en_buffer;
 	logic 			mem2Reg;
 	logic			cu_end_program;
-
+	logic			cu_sign_extend;
+	logic			exec_sp_inc;
 	controlunit cu (
 		.alu_status_i(alu_status_i),
 		.in (instruct_cu),
-		.cu_input_en_i (1),
+		.cu_input_en_i (1'b1),
+		.is_self_instruct_i(self_instruct_en_buffer),
 		.immediate (use_immidiate),
 		.PCtoALU (PCtoALU),
 		.shiftImm(shift_imm),
@@ -98,16 +110,22 @@ module decode_rf (
 		.branch (cu_branch),
 		.self_instruct_o (self_instruct),
 		.self_instruct_en_o(self_instruct_en),
-		.sp_dec_o(exec_sp_dec_o),
+		.sp_inc_o(exec_sp_inc),
 		.sp_write_en_o (sp_wr_en),
 		.mem2Reg_o (mem2Reg),
 		.rf_write_en_o (cu_rf_wr_en),
-		.end_program_o (cu_end_program)		
+		.end_program_o (cu_end_program),	
+		.sign_extend_en_o (cu_sign_extend),
+		.rf_mov_r2r_en_o (mov_r2r_enable),
+		.rf_mov_i2r_en_o (mov_i2r_enable)
 	);
 	
 	always_comb begin
+		// we have a branch instruction, so we are going to Flush the pipeline stages
+		if (cu_branch_o)
+			instruct_cu = 16'hffff;
 		// use the stored instruction from the either the last stall or the self-instruction first
-		if (instruct_cu_en_buffer) 
+		else if (instruct_cu_en_buffer) 
 			instruct_cu = instruct_cu_buffer;
 			
 		else if (instr_en_i)
@@ -116,20 +134,32 @@ module decode_rf (
 		else instruct_cu = 16'hffff;
 	end
 	
+	
 	assign cu_stall_o = cu_mem_load_en || cu_mem_write_en;
+
+	// we do not want to use the next PC if this is a load instruction (cannot fetch)
+	assign stall_pc_o = cu_mem_load_en & ~stall_i; // || cu_mem_write_en;
 	assign cu_stall_self_instruct_o = self_instruct_en;
 	assign reg_a_o = reg_a; 
 	assign reg_b_o = reg_b;
 	assign next_programm_counter_o = next_programm_counter_i;
+
 	always_ff @ (posedge clk_i) begin
-		if(rst_i) 
+		if(rst_i) begin
 			instruct_cu_en_buffer <= 1'b0;
+			
+			mov_r2r_enable_buffer <= 0;
 		
+		end
 		else begin		
 			if(~stall_i) begin	
-				immidiate_value_o <= {24'd0, immOut};
-				next_programm_counter_o <= next_programm_counter_i;
 				
+				mov_r2r_enable_buffer <= mov_r2r_enable;
+			
+		
+				immidiate_value_o <= {24'd0, immOut};
+				self_instruct_en_buffer <= self_instruct_en;
+				exec_sp_inc_o <= exec_sp_inc;
 				if (self_instruct_en) begin
 					instruct_cu_en_buffer <= 1'b1;
 					instruct_cu_buffer <= self_instruct;
@@ -152,6 +182,7 @@ module decode_rf (
 				PC_to_ALU_o <= PCtoALU;
 			
 				end_program_o <= cu_end_program;
+				sign_extend_en_o <= cu_sign_extend;
 			end
 			else if (~instruct_cu_en_buffer & instr_en_i) begin
 				// if we fetched an instruction and are going to stall, we have to save it for the next clock cycle

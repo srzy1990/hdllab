@@ -34,6 +34,8 @@ module register_file(
 logic [31:0] register[0:7];
 logic [31:0] sp;
 logic [31:0] lr;
+logic [31:0] data0;
+logic [31:0] data1;
 
 // REGISTERED WRITE
 always_ff@(negedge clk) begin
@@ -58,6 +60,9 @@ always_ff@(negedge clk) begin
 			else if (wr_select == 32'he) begin
 				lr <= data_in;
 			end
+			else if (wr_select == 32'hd) begin
+				sp <= data_in;
+			end
 		end
 		if (sp_write_en==1'b1) begin
 			sp <= sp_in;
@@ -68,31 +73,42 @@ end
 // REGISTERED READ
 always_ff@(posedge clk) begin
 	if (rst == 1'b1) begin
-		data_out0 <= 32'b0;
-		data_out1 <= 32'b0;
+		data0 <= 32'b0;
+		data1 <= 32'b0;
 	end
 	else begin
 		if (~stall_i) begin
 			if (rd0_select < 32'h8) begin
-				data_out0 <= register[rd0_select];
+				data0 <= register[rd0_select];
 			end
 			else if (rd0_select == 32'hd) begin
-				data_out0 <= sp;
+				data0 <= sp;
 			end
 			else if (rd0_select == 32'he) begin
-				data_out0 <= lr;
+				data0 <= lr;
 			end
 			if (rd1_select < 32'h8) begin
-				data_out1 <= register[rd1_select];
+				data1 <= register[rd1_select];
 			end
-			else if (rd1_select == 32'hd) begin
-				data_out1 <= sp;
+			else if (rd1_select == 32'hd) begin 
+				data1 <= sp;
 			end
 			else if (rd1_select == 32'he) begin
-				data_out1 <= lr;
+				data1 <= lr;
 			end
 		end
 	end
 end
+
+always_comb begin
+/*	if (rd0_select == 32'hd & wr_select == 32'hd)
+		data_out0 = data_in;
+	else*/ data_out0 = data0;
+	
+/*	if (rd1_select == 32'hd & wr_select == 32'hd)
+		data_out1 = data_in;
+	else*/ data_out1 = data1;
+end
+
 
 endmodule

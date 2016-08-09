@@ -98,7 +98,7 @@ module cpu #(
 	logic 		 	cu_2_x_mem_write;
 	logic 		 	cu_2_x_set_ALU_status;
 	logic [31:0] 	x2d_wb_sp;
-	logic			x2d_wb_sp_dec;
+	logic			x2d_wb_sp_inc;
 	logic 		 	d_rf2x_pc_to_alu;
 	logic 			d_rf2x_mem2Reg;
 	logic [3:0]		d_rf2x_rf_wr_select;
@@ -112,6 +112,8 @@ module cpu #(
 	logic			hdu2drf_stall_decode;
 	logic			d2hdu_stall_pc;
 	logic			cu2x_sign_extend_en;
+	logic			d2hdu_fwd_rd0;
+	logic			d2hdu_fwd_rd1;
 
 	decode_rf d_rf (
 		.clk_i (clk_i),
@@ -140,17 +142,21 @@ module cpu #(
 		.cu_branch_o(wbf_branch),
 		.cu_stall_self_instruct_o (cu2hdu_stall_si),
 		.x_imm_to_alu_o (d_rf2x_imm_to_alu),
-		.exec_sp_dec_o (x2d_wb_sp_dec),
+		.exec_sp_inc_o (x2d_wb_sp_inc),
 		.mem2Reg_o(d_rf2x_mem2Reg),
 		.rf_wr_select_o (d_rf2x_rf_wr_select),
 		.rf_wr_en_o (d_rf2x_rf_wr_en),
 		.rf_sp_wr_en_o (d_rf2x_rf_sp_wr_en),
 		.stall_pc_o (d2hdu_stall_pc),
 		.end_program_o(end_program_o),
-		.sign_extend_en_o (cu2x_sign_extend_en)
+		.sign_extend_en_o (cu2x_sign_extend_en),
+		.fwd_rd0_o (d2hdu_fwd_rd0),
+		.fwd_rd1_o (d2hdu_fwd_rd1)
 	);
 
 	logic 			x2hdu_stall_d_rf;
+	logic			hdu2x_fwd_rd0;
+	logic			hdu2x_fwd_rd1;
 
 	execute_mem x (
 		.clk_i(clk_i),
@@ -167,12 +173,14 @@ module cpu #(
 		.mem_re_i (cu_2_x_mem_load),
 		.mem_we_i (cu_2_x_mem_write),
 		.set_alu_status_i (cu_2_x_set_ALU_status),
-		.sp_inc_i (x2d_wb_sp_dec),
+		.sp_inc_i (x2d_wb_sp_inc),
 		.mem_to_reg_i (d_rf2x_mem2Reg),
 		.rf_wr_select_i(d_rf2x_rf_wr_select),
 		.rf_wr_en_i (d_rf2x_rf_wr_en),
 		.rf_sp_wr_en_i (d_rf2x_rf_sp_wr_en),
 		.sign_extend_en_i (cu2x_sign_extend_en),
+		.forward_rda_i (hdu2x_fwd_rd0),
+		.forward_rdb_i (hdu2x_fwd_rd1),
 	
 		.branch_o (wbf_branch_pc),
 		.data_calc_o (wbf_data_calc),
@@ -193,10 +201,14 @@ module cpu #(
 		.cu_stall_si_i (cu2hdu_stall_si),
 		.x_stall_d_i (x2hdu_stall_d_rf),
 		.d_stall_pc_i (d2hdu_stall_pc),
+		.d_fwd_rd0_i (d2hdu_fwd_rd0),
+		.d_fwd_rd1_i (d2hdu_fwd_rd1),
 
 		.stall_fetch_o (hdu2wbf_stall_fetch),
 		.stall_decode_o (hdu2drf_stall_decode),
-		.stall_pc_o (hdu2wbf_stall_pc)
+		.stall_pc_o (hdu2wbf_stall_pc),
+		.forward_rd0 (hdu2x_fwd_rd0),
+		.forward_rd1 (hdu2x_fwd_rd1)
 	);
 	
 endmodule

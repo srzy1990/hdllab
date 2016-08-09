@@ -9,7 +9,7 @@ module alu (
 	output logic [3:0] status_o
 );
 
-	parameter ADD = 0, SUB = 1, CMP  = 2, LSL = 3 ;
+	parameter ADD = 0, SUB = 1, MOV  = 2, LSL = 3 ;
 	logic overflow;
 
 	always_comb begin
@@ -19,8 +19,8 @@ module alu (
 		
 		case (opcode_i) 
 			ADD: {overflow, data_o} = data1_i + data2_i;
-			CMP: {overflow, data_o} = data1_i - data2_i; 
 			SUB: {overflow, data_o} = data1_i - data2_i;
+			MOV: data_o = data2_i;
 			LSL: {overflow, data_o} = data1_i << data2_i;
 			//LSR: data_o = data_1 >> data_2;
 			//ASR: data_o = data_1 >>> data_2;

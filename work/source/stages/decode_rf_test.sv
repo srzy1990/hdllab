@@ -23,6 +23,7 @@ module decode_rf (
 	output logic		 cu_branch_o,
 	output logic 	 	 exec_sp_inc_o,
 	output logic		 mem2Reg_o,
+	output logic 		 stall_wb_conflict_o,
 	
 	output logic		 x_imm_to_alu_o,
 	output logic 		 cu_stall_o,
@@ -37,9 +38,7 @@ module decode_rf (
 	output logic 	   	rf_wr_en_o,
 	output logic 	   	rf_sp_wr_en_o,
 	output logic		stall_pc_o,
-	output logic		sign_extend_en_o,	
-	output logic		fwd_rd0_o,
-	output logic		fwd_rd1_o
+	output logic		sign_extend_en_o		
 );
 	//register_file logic
 	logic [3:0] 	rf_rd0_sel;
@@ -88,8 +87,7 @@ module decode_rf (
 	logic			exec_sp_inc;
 	logic [3:0]		wb_select;
 	logic			wb_en;
-	logic			rf_written;
-
+	
 	controlunit cu (
 		.alu_status_i(alu_status_i),
 		.in (instruct_cu),
@@ -133,7 +131,7 @@ module decode_rf (
 	
 	
 	assign cu_stall_o = cu_mem_load_en || cu_mem_write_en;
-	assign stall_wb_conflict_o = 0; //~rf_wr_en_i & wb_en & ((wb_select == rf_rd0_sel) | (wb_select == rf_rd1_sel));
+	assign stall_wb_conflict_o = wb_en & ((wb_select == rf_rd0_sel) | (wb_select == rf_rd1_sel));
 
 	// we do not want to use the next PC if this is a load instruction (cannot fetch)
 	assign stall_pc_o = cu_mem_load_en & ~stall_i; // || cu_mem_write_en;
@@ -146,13 +144,9 @@ module decode_rf (
 		if(rst_i) begin
 			instruct_cu_en_buffer <= 1'b0;
 			wb_select <= 4'hf;
-			wb_en <= 1'b0;
-			cu_mem_load_en_o <= 1'b0;
-			cu_mem_write_en_o <= 1'b0;
-			cu_branch_o <= 1'b0;
-			fwd_rd1_o <= 1'b0;
-			fwd_rd0_o <= 1'b0;
+			wb_en <= 0;
 		end
+		
 		else begin		
 			if(~stall_i) begin	
 				immidiate_value_o <= {24'd0, immOut};
@@ -181,17 +175,14 @@ module decode_rf (
 			
 				end_program_o <= cu_end_program;
 				sign_extend_en_o <= cu_sign_extend;
-				rf_written <= 1'b0;
-				fwd_rd0_o <= wb_en & ~cu_mem_load_en_o & (wb_select == rf_rd0_sel);
-				fwd_rd1_o <= wb_en & ~cu_mem_load_en_o & (wb_select == rf_rd1_sel);
 			end
 			else if (~instruct_cu_en_buffer & instr_en_i) begin
 				// if we fetched an instruction and are going to stall, we have to save it for the next clock cycle
 				instruct_cu_en_buffer <= 1'b1;
 				instruct_cu_buffer <= instr_i;
-				rf_written <= 1'b0;
 			end
-			else rf_written = rf_wr_en_i;
+			// are we going to write data back to the RegFile in the next clock cycle?
+			// we will have to stall Decode if the destination register is the same as the source registers of the next instruction
 			wb_select <= rf_wr_sel;
 			wb_en <= cu_rf_wr_en;
 		end
