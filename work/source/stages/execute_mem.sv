@@ -39,13 +39,15 @@ module execute_mem (
 );
 
 	// INTERNAL SIGNALS
-	logic [31:0] alu_in1;
-	logic [31:0] alu_in2;
-	logic [31:0] alu_out;
+	logic [31:0]	alu_in1;
+	logic [31:0]	alu_in2;
+	logic [31:0]	alu_out;
 
-	logic [31:0] s_imm; // shifted immediate
-	logic [31:0] signed_imm;
-	logic		alu_status_o;
+
+	logic [31:0]	s_imm; // shifted immediate
+	logic [31:0]	signed_imm;
+	logic [3:0]		alu_status_o;
+
 	
 	// FSM
 	parameter ST_OP_CODE_HANDLING = 1;
@@ -82,21 +84,14 @@ module execute_mem (
 					next_state = ST_RW_HIGH;
 					stall_d_o = 1;						// stall decode phase as we do not want new adresses for the second memory access
 				end
-				
-				if(mem_we_i)
-					data_mem_addr_o = alu_out + 32'd2;
 			end
 			ST_RW_HIGH: begin
 				next_state = ST_OP_CODE_HANDLING;
 	
 				data_mem_o = reg_b_i[31:16]; 
-				if(mem_re_i)
-					data_mem_addr_o = (alu_out + 32'd2);
-				else if (mem_we_i)
-					data_mem_addr_o = alu_out;
-				if(sp_inc_i)
-					sp_o <= alu_out + 32'd4;
-				else sp_o <= alu_out;	
+				data_mem_addr_o = (alu_out + 32'd2);
+
+				sp_o <= sp_inc_i? (alu_out + 32'd4) : alu_out;	
 				rf_sp_wr_en_o = rf_sp_wr_en_i;
 			end
 		endcase
