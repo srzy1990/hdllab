@@ -43,9 +43,11 @@ module execute_mem (
 	logic [31:0]	alu_in2;
 	logic [31:0]	alu_out;
 
+
 	logic [31:0]	s_imm; // shifted immediate
 	logic [31:0]	signed_imm;
 	logic [3:0]		alu_status_o;
+
 	
 	// FSM
 	parameter ST_OP_CODE_HANDLING = 1;
